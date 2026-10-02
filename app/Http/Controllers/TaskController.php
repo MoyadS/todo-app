@@ -88,7 +88,16 @@ class TaskController extends Controller
         'description' => 'nullable|string',
         'status' => 'nullable|string',
         'due_date' => 'nullable|date',
+        'project_id' => 'nullable|exists:projects,id',
     ]);
+
+    if (isset($validated['project_id'])) {
+        $project = Project::find($validated['project_id']);
+
+        if ($project->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'غير مسموح لك بهاد الإجراء'], 403);
+        }
+    }
 
     $task->update($validated);
 
